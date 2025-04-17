@@ -8,3 +8,4 @@ opencv-python
 pyzbar
 gunicorn
 requests
+beautifulsoup4
