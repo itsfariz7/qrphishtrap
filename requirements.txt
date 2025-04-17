@@ -7,3 +7,4 @@ flask-cors
 opencv-python
 pyzbar
 gunicorn
+requests
