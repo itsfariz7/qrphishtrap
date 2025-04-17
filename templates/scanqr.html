@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek QR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+        #reader {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+<!-- Navbar -->
+<nav class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-50 relative">
+    <a href="{{ url_for('home') }}" class="text-2xl font-bold">QR PhishTrap</a>
+    <div class="md:hidden">
+        <button id="menu-btn" class="focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+    </div>
+    <ul class="hidden md:flex space-x-6 text-gray-600">
+        <li><a href="{{ url_for('url_page') }}" class="hover:text-black">URL</a></li>
+        <li><a href="{{ url_for('scanqr_page') }}" class="hover:text-black">QR Code</a></li>
+    </ul>
+    <div id="mobile-menu" class="absolute top-full left-0 w-full bg-white shadow-md hidden flex flex-col space-y-2 px-4 py-2 z-40 md:hidden">
+        <a href="{{ url_for('url_page') }}" class="text-gray-600 hover:text-black border-b border-gray-300 pb-2 w-full text-center">URL</a>
+        <a href="{{ url_for('scanqr_page') }}" class="text-gray-600 hover:text-black text-center">QR Code</a>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="w-full min-h-screen max-w-none p-6 text-center flex flex-col items-center justify-center mt-[4.5rem]">
+    <div class="flex justify-center space-x-8 mb-6">
+        <a href="{{ url_for('url_page') }}" class="text-gray-400 font-semibold hover:text-gray-600">Cek URL</a>
+        <a href="#" class="text-blue-600 font-semibold border-b-2 border-blue-600">Cek QR</a>
+    </div>
+    <h1 class="text-3xl md:text-4xl font-semibold mb-4 max-w-[900px]">Bagaimana cara memeriksa apakah suatu QR Code itu aman?</h1>
+    <p class="text-gray-600 mb-6 px-4 max-w-3xl mx-auto">
+        Jika Anda menemukan QR Code yang ingin Anda lihat tetapi tampaknya mencurigakan, cukup gunakan pemeriksa QR Code untuk memindai QR Code dengan cepat dan mengetahui apakah QR Code tersebut aman.
+    </p>
+
+    <!-- Steps -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl bg-white p-6 rounded-lg">
+        <div class="bg-white shadow-md p-6 rounded-lg text-center hover:scale-105 hover:shadow-lg transition-transform">
+            <h2 class="text-blue-600 text-xl font-semibold">01</h2>
+            <p class="text-gray-600">Open camera/pilih foto</p>
+        </div>
+        <div class="bg-white shadow-md p-6 rounded-lg text-center hover:scale-105 hover:shadow-lg transition-transform">
+            <h2 class="text-blue-600 text-xl font-semibold">02</h2>
+            <p class="text-gray-600">Tunggu selama beberapa saat.</p>
+        </div>
+        <div class="bg-white shadow-md p-6 rounded-lg text-center hover:scale-105 hover:shadow-lg transition-transform">
+            <h2 class="text-blue-600 text-xl font-semibold">03</h2>
+            <p class="text-gray-600">Lihat hasilnya.</p>
+        </div>
+    </div>
+
+    <!-- Upload QR -->
+    <div class="mt-10 flex flex-col items-center w-full max-w-md">
+        <label for="imageInput" class="mb-2 font-medium text-gray-700">Atau unggah gambar QR Code:</label>
+        <input type="file" accept="image/*" id="imageInput"
+               class="mb-4 px-4 py-2 border rounded-lg w-full text-sm cursor-pointer">
+        <img id="qrPreview" class="hidden w-full max-w-xs border border-gray-300 rounded-lg shadow-md mb-6" alt="Preview QR Code">
+    </div>
+
+    <!-- Kamera -->
+    <div id="reader" class="border-2 border-gray-500 rounded-lg shadow-md mb-4"></div>
+
+    <!-- URL hasil scan -->
+    <input type="text" id="qrResult"
+           class="mt-2 px-4 py-2 border rounded-lg text-center text-lg w-80"
+           placeholder="QR Code URL akan muncul di sini" disabled>
+
+    <!-- Pesan hasil -->
+    <p id="scanMessage" class="mt-4 text-lg font-semibold"></p>
+
+    <p class="text-gray-500 text-sm mt-4 px-4">
+        Dengan anda membuka kamera, Anda menyetujui <a href="#" class="text-blue-600 hover:underline">ketentuan layanan</a> dan <a href="#" class="text-blue-600 hover:underline">kebijakan privasi</a>
+    </p>
+</div>
+
+<!-- Footer -->
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+        <div class="text-center md:text-left mb-6 md:mb-0">
+            <p class="text-lg font-bold">QR PhishTrap</p>
+            <p class="text-sm">Your trusted source for phishing protection.</p>
+        </div>
+        <div class="flex space-x-4 mb-6 md:mb-0">
+            <a href="#" class="hover:text-gray-400">Privacy Policy</a>
+            <a href="#" class="hover:text-gray-400">Terms of Service</a>
+            <a href="#" class="hover:text-gray-400">Contact</a>
+        </div>
+    </div>
+    <div class="text-center mt-6 text-sm text-gray-400">
+        &copy; 2025 QR PhishTrap. All rights reserved.
+    </div>
+</footer>
+
+<!-- Script -->
+<script>
+    function onScanSuccess(qrCodeMessage) {
+        document.getElementById("qrResult").value = qrCodeMessage;
+
+        fetch('/analyze_qr', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ qr_url: qrCodeMessage })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let msg = document.getElementById("scanMessage");
+            msg.innerText = data.message;
+            msg.style.color = data.color;
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    function onScanFailure(error) {
+        console.warn(`QR scan error: ${error}`);
+    }
+
+    const html5QrCode = new Html5Qrcode("reader");
+    html5QrCode.start(
+        { facingMode: "environment" },
+        {
+            fps: 10,
+            qrbox: { width: 300, height: 300 }
+        },
+        onScanSuccess,
+        onScanFailure
+    );
+
+    document.getElementById('menu-btn').addEventListener('click', () => {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+
+    document.getElementById('imageInput').addEventListener('change', async function () {
+        const file = this.files[0];
+        const preview = document.getElementById('qrPreview');
+        const resultInput = document.getElementById('qrResult');
+        const messageDiv = document.getElementById('scanMessage');
+
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const res = await fetch("https://api.qrserver.com/v1/read-qr-code/", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await res.json();
+            const qrUrl = data[0]?.symbol[0]?.data;
+
+            if (!qrUrl) {
+                resultInput.value = "QR Code tidak valid atau tidak terbaca.";
+                return;
+            }
+
+            resultInput.value = qrUrl;
+
+            const analyzeRes = await fetch("/analyze_qr", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ qr_url: qrUrl })
+            });
+
+            const analyzeData = await analyzeRes.json();
+            messageDiv.innerText = analyzeData.message;
+            messageDiv.style.color = analyzeData.color;
+
+        } catch (err) {
+            console.error(err);
+            resultInput.value = "Terjadi kesalahan saat membaca QR Code.";
+        }
+    });
+</script>
+</body>
+</html>
