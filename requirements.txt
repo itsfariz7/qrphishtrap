@@ -9,3 +9,5 @@ pyzbar
 gunicorn
 requests
 beautifulsoup4
+whois
+
